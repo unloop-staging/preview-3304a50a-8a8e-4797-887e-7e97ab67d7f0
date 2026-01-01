@@ -1,0 +1,575 @@
+// Generated Screen Components
+
+import { SmallAppBar, FilledButton, OutlineButton, Switch, Slider, ScrollView } from "@material";
+import { MetricCard, MetricData } from "../components/index.slint";
+import { StatusIndicator, StatusLevel } from "../components/index.slint";
+import { ValueStepper, ValueStepperCompact } from "../components/index.slint";
+import { AppData } from "data.slint";
+
+export component HomeScreen inherits Rectangle {
+    in-out property <AppData> data;
+    
+    callback start-pause-clicked();
+    callback stop-clicked();
+    
+    background: transparent;
+    
+    VerticalLayout {
+        SmallAppBar {
+            title: "Home";
+        }
+        
+        Rectangle {
+            vertical-stretch: 1;
+            
+            ScrollView {
+                VerticalLayout {
+                    padding: 16px;
+                    spacing: 24px;
+                    
+                    Text {
+                        text: "Overview";
+                        font-size: 14px;
+                        font-weight: 500;
+                        color: #9E9E9E;
+                    }
+                    
+                    HorizontalLayout {
+                        spacing: 12px;
+                        
+                        MetricCard {
+                            data: {
+                                label: "Temperature",
+                                value: data.current-temp,
+                                unit: "°F",
+                                trend: "",
+                                trend-value: ""
+                            };
+                        }
+                        MetricCard {
+                            data: {
+                                label: "Time Left",
+                                value: data.time-remaining,
+                                unit: "min",
+                                trend: "",
+                                trend-value: ""
+                            };
+                        }
+                        MetricCard {
+                            data: {
+                                label: "Progress",
+                                value: data.cook-progress,
+                                unit: "%",
+                                trend: "",
+                                trend-value: ""
+                            };
+                        }
+                    }
+
+                    Text {
+                        text: "Status";
+                        font-size: 14px;
+                        font-weight: 500;
+                        color: #9E9E9E;
+                    }
+                    
+                    Rectangle {
+                        background: #2A2A2A;
+                        border-radius: 12px;
+                        
+                        VerticalLayout {
+                            padding: 12px;
+                            spacing: 12px;
+                            
+                            HorizontalLayout {
+                                alignment: space-between;
+                                
+                                Text {
+                                    text: "Status";
+                                    font-size: 14px;
+                                    color: #E0E0E0;
+                                }
+                                
+                                StatusIndicator {
+                                    level: StatusLevel.ok;
+                                    label: data.cooking-status;
+                                }
+                            }
+                            HorizontalLayout {
+                                alignment: space-between;
+                                
+                                Text {
+                                    text: "Basket";
+                                    font-size: 14px;
+                                    color: #E0E0E0;
+                                }
+                                
+                                StatusIndicator {
+                                    level: StatusLevel.ok;
+                                    label: data.basket-status;
+                                }
+                            }
+                        }
+                    }
+
+                    HorizontalLayout {
+                        spacing: 12px;
+                        
+                        FilledButton {
+                            text: "Start/Pause";
+                            clicked => { start-pause-clicked(); }
+                        }
+                        OutlineButton {
+                            text: "Stop";
+                            clicked => { stop-clicked(); }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+export component PresetsScreen inherits Rectangle {
+    in-out property <AppData> data;
+    
+
+    
+    background: transparent;
+    
+    VerticalLayout {
+        SmallAppBar {
+            title: "Cooking Presets";
+        }
+        
+        Rectangle {
+            vertical-stretch: 1;
+            
+            ScrollView {
+                VerticalLayout {
+                    Text {
+                        text: "No presets available";
+                        font-size: 18px;
+                        color: white;
+                        horizontal-alignment: center;
+                    }
+                }
+            }
+        }
+    }
+}
+
+export component ControlScreen inherits Rectangle {
+    in-out property <AppData> data;
+    
+    callback target-changed(float);
+    callback mode-changed(string);
+    
+    background: transparent;
+    
+    VerticalLayout {
+        SmallAppBar {
+            title: "Manual Control";
+        }
+        
+        Rectangle {
+            vertical-stretch: 1;
+            
+            VerticalLayout {
+                padding: 24px;
+                spacing: 32px;
+                alignment: center;
+                
+                VerticalLayout {
+                    spacing: 8px;
+                    alignment: center;
+                    
+                    Text {
+                        text: "Current Temperature";
+                        font-size: 14px;
+                        color: #9E9E9E;
+                        horizontal-alignment: center;
+                    }
+                    
+                    HorizontalLayout {
+                        alignment: center;
+                        spacing: 4px;
+                        
+                        Text {
+                            text: data.current-temp;
+                            font-size: 64px;
+                            font-weight: 300;
+                            color: white;
+                        }
+                        
+                        Text {
+                            text: "°F";
+                            font-size: 24px;
+                            color: #9E9E9E;
+                            vertical-alignment: bottom;
+                        }
+                    }
+                }
+                
+                Rectangle {
+                    height: 1px;
+                    background: #424242;
+                }
+                
+                VerticalLayout {
+                    spacing: 16px;
+                    alignment: center;
+                    
+                    Text {
+                        text: "Set Temperature";
+                        font-size: 14px;
+                        color: #9E9E9E;
+                        horizontal-alignment: center;
+                    }
+                    
+                    ValueStepper {
+                        value <=> data.target-temp;
+                        min: 180;
+                        max: 400;
+                        step: 5;
+                        unit: "°F";
+                        
+                        changed(val) => { target-changed(val); }
+                    }
+                }
+
+                HorizontalLayout {
+                    alignment: center;
+                    spacing: 8px;
+                    
+                    Rectangle {
+                        width: 80px;
+                        height: 40px;
+                        border-radius: 20px;
+                        background: data.mode == "air_fry" ? #3AA1F5 : #424242;
+                        
+                        TouchArea {
+                            clicked => { mode-changed("air_fry"); }
+                        }
+                        
+                        Text {
+                            text: "Air Fry";
+                            font-size: 14px;
+                            color: white;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                        }
+                    }
+                    Rectangle {
+                        width: 80px;
+                        height: 40px;
+                        border-radius: 20px;
+                        background: data.mode == "bake" ? #3AA1F5 : #424242;
+                        
+                        TouchArea {
+                            clicked => { mode-changed("bake"); }
+                        }
+                        
+                        Text {
+                            text: "Bake";
+                            font-size: 14px;
+                            color: white;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                        }
+                    }
+                    Rectangle {
+                        width: 80px;
+                        height: 40px;
+                        border-radius: 20px;
+                        background: data.mode == "roast" ? #3AA1F5 : #424242;
+                        
+                        TouchArea {
+                            clicked => { mode-changed("roast"); }
+                        }
+                        
+                        Text {
+                            text: "Roast";
+                            font-size: 14px;
+                            color: white;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                        }
+                    }
+                    Rectangle {
+                        width: 80px;
+                        height: 40px;
+                        border-radius: 20px;
+                        background: data.mode == "reheat" ? #3AA1F5 : #424242;
+                        
+                        TouchArea {
+                            clicked => { mode-changed("reheat"); }
+                        }
+                        
+                        Text {
+                            text: "Reheat";
+                            font-size: 14px;
+                            color: white;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+export component SettingsScreen inherits Rectangle {
+    in-out property <AppData> data;
+    
+
+    
+    background: transparent;
+    
+    VerticalLayout {
+        SmallAppBar {
+            title: "Settings";
+        }
+        
+        Rectangle {
+            vertical-stretch: 1;
+            
+            ScrollView {
+                VerticalLayout {
+                    padding-top: 8px;
+                    padding-bottom: 24px;
+
+                    Rectangle {
+                        height: 48px;
+                        
+                        Text {
+                            x: 16px;
+                            text: "Cooking";
+                            font-size: 14px;
+                            font-weight: 500;
+                            color: #3AA1F5;
+                            vertical-alignment: center;
+                        }
+                    }
+                    
+                    Rectangle {
+                        background: #2A2A2A;
+                        
+                        VerticalLayout {
+                            Rectangle {
+                                height: 56px;
+                                
+                                HorizontalLayout {
+                                    padding-left: 16px;
+                                    padding-right: 16px;
+                                    
+                                    VerticalLayout {
+                                        horizontal-stretch: 1;
+                                        alignment: center;
+                                        
+                                        Text {
+                                            text: "Temperature Unit";
+                                            font-size: 16px;
+                                            color: white;
+                                        }
+                                    }
+                                    
+                                }
+                            }
+                            Rectangle {
+                                height: 56px;
+                                
+                                HorizontalLayout {
+                                    padding-left: 16px;
+                                    padding-right: 16px;
+                                    
+                                    VerticalLayout {
+                                        horizontal-stretch: 1;
+                                        alignment: center;
+                                        
+                                        Text {
+                                            text: "Auto Preheat";
+                                            font-size: 16px;
+                                            color: white;
+                                        }
+                                    }
+                                    
+                                    Switch {
+                                        checked <=> data.auto-preheat;
+                                    }
+                                }
+                            }
+                            Rectangle {
+                                height: 56px;
+                                
+                                HorizontalLayout {
+                                    padding-left: 16px;
+                                    padding-right: 16px;
+                                    
+                                    VerticalLayout {
+                                        horizontal-stretch: 1;
+                                        alignment: center;
+                                        
+                                        Text {
+                                            text: "Shake Reminder";
+                                            font-size: 16px;
+                                            color: white;
+                                        }
+                                    }
+                                    
+                                    Switch {
+                                        checked <=> data.shake-reminder;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        height: 48px;
+                        
+                        Text {
+                            x: 16px;
+                            text: "Display";
+                            font-size: 14px;
+                            font-weight: 500;
+                            color: #3AA1F5;
+                            vertical-alignment: center;
+                        }
+                    }
+                    
+                    Rectangle {
+                        background: #2A2A2A;
+                        
+                        VerticalLayout {
+                            Rectangle {
+                                height: 56px;
+                                
+                                HorizontalLayout {
+                                    padding-left: 16px;
+                                    padding-right: 16px;
+                                    
+                                    VerticalLayout {
+                                        horizontal-stretch: 1;
+                                        alignment: center;
+                                        
+                                        Text {
+                                            text: "Screen Brightness";
+                                            font-size: 16px;
+                                            color: white;
+                                        }
+                                    }
+                                    
+                                    ValueStepperCompact {
+                                        value <=> data.screen-brightness;
+                                        min: 10;
+                                        max: 100;
+                                        step: 10;
+                                        unit: "%";
+                                    }
+                                }
+                            }
+                            Rectangle {
+                                height: 56px;
+                                
+                                HorizontalLayout {
+                                    padding-left: 16px;
+                                    padding-right: 16px;
+                                    
+                                    VerticalLayout {
+                                        horizontal-stretch: 1;
+                                        alignment: center;
+                                        
+                                        Text {
+                                            text: "Sound Alerts";
+                                            font-size: 16px;
+                                            color: white;
+                                        }
+                                    }
+                                    
+                                    Switch {
+                                        checked <=> data.sound-enabled;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        height: 48px;
+                        
+                        Text {
+                            x: 16px;
+                            text: "Maintenance";
+                            font-size: 14px;
+                            font-weight: 500;
+                            color: #3AA1F5;
+                            vertical-alignment: center;
+                        }
+                    }
+                    
+                    Rectangle {
+                        background: #2A2A2A;
+                        
+                        VerticalLayout {
+                            Rectangle {
+                                height: 56px;
+                                
+                                HorizontalLayout {
+                                    padding-left: 16px;
+                                    padding-right: 16px;
+                                    
+                                    VerticalLayout {
+                                        horizontal-stretch: 1;
+                                        alignment: center;
+                                        
+                                        Text {
+                                            text: "Last Cleaned";
+                                            font-size: 16px;
+                                            color: white;
+                                        }
+                                    }
+                                    
+                                    Text {
+                                        text: data.last-cleaned;
+                                        font-size: 14px;
+                                        color: #9E9E9E;
+                                        vertical-alignment: center;
+                                    }
+                                }
+                            }
+                            Rectangle {
+                                height: 56px;
+                                
+                                HorizontalLayout {
+                                    padding-left: 16px;
+                                    padding-right: 16px;
+                                    
+                                    VerticalLayout {
+                                        horizontal-stretch: 1;
+                                        alignment: center;
+                                        
+                                        Text {
+                                            text: "Usage Hours";
+                                            font-size: 16px;
+                                            color: white;
+                                        }
+                                    }
+                                    
+                                    Text {
+                                        text: data.total-usage-hours;
+                                        font-size: 14px;
+                                        color: #9E9E9E;
+                                        vertical-alignment: center;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
